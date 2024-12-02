@@ -1,14 +1,14 @@
 -- Create the database
-CREATE DATABASE OnlineStore;
+CREATE DATABASE onlinestore IF NOT EXISTS;
 
 -- Connect to the database
-\c OnlineStore;
+\c onlinestore;
 
 -- Create the "Users" table
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL -- Store hashed passwords in production
+    password VARCHAR(255) NOT NULL 
 );
 
 -- Create the "Products" table

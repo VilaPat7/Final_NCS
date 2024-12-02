@@ -1,44 +1,44 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import './search_page.css';
 import { Element } from "../../components/element";
-import plantImage from '../../images/1.png';
 import { CartContext } from '../../components/provider';
+import API_BASE_URL from "../../api"; // Make sure this points to your backend API
+import defaultImage from '../../images/1.png';
+
 
 export const SearchPage = () => {
-    const { addToCart } = useContext(CartContext);
-    const ListPlants = [
-        {
-            id: 1,
-            plantName: "a",
-            plantImage: plantImage
-        },
-        {
-            id: 2,
-            plantName: "b",
-            plantImage: plantImage
-        }
-    ];
-    // const handleSearch = async () => {
-    //     try {
-    //         const response = await fetch(`/api/search?q=${searchQuery}`);
-    //         const data = await response.json();
-    //         setPlants(data);
-    //     } catch (err) {
-    //         console.error('An error occurred', err);
-    //     }
-    // };
+    const { addToCart } = useContext(CartContext); // Context for adding items to cart
+    const [products, setProducts] = useState([]); // State to hold products from the database
+    const [searchQuery, setSearchQuery] = useState(""); // State for search input
+    const [filter, setFilter] = useState("all"); // Optional filter state (if applicable)
 
-    const [filter, setFilter] = useState("all");
-    const [searchQuery, setSearchQuery] = useState("");
+    // Fetch products from the backend
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/products`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch products");
+                }
+                const data = await response.json();
+                setProducts(data); // Store fetched products in state
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
 
-    const filteredPlants = ListPlants.filter((plant) =>
-        plant.plantName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        (filter === "all" ? true : plant.type === filter)
+        fetchProducts();
+    }, []);
+
+    // Filter products based on search query and optional filter
+    const filteredProducts = products.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        (filter === "all" ? true : product.type === filter)
     );
 
-    const handleSelect = (plant) => {
-        addToCart(plant);
-    
+    // Add product to cart
+    const handleSelect = (product) => {
+        addToCart(product);
     };
 
     return (
@@ -52,16 +52,15 @@ export const SearchPage = () => {
                 className="search_input"
             />
             <div className="search_grid">
-                {filteredPlants.map((plant) => (
+                {filteredProducts.map((product) => (
                     <Element
-                        key={plant.id}
-                        plantID={plant.id}
-                        plantTitle={plant.plantName}
-                        plantImage={plant.plantImage}
-                        plantClick={() => handleSelect(plant)}
+                        key={product.id}
+                        plantTitle={product.name}
+                        plantImage={defaultImage} 
+                        plantClick={() => handleSelect(product)}
                     />
                 ))}
             </div>
         </div>
     );
-}
+};
