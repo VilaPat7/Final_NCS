@@ -42,13 +42,21 @@ export const SearchPage = () => {
         }
     };
 
+    // const handleSelect = (product) => {
+    //     addToCart(product);
+    // };
     const handleSelect = (product) => {
-        addToCart(product);
+        addToCart({
+            id: product.id,
+            plantName: product.name,
+            plantImage: defaultImage, // Pass the correct image
+        });
     };
 
     return (
         <div className="search_page">
             <p className="search_title">Product Search</p>
+            <div className="inputtt">
             <input
                 type="text"
                 placeholder="Search..."
@@ -56,7 +64,8 @@ export const SearchPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search_input"
             />
-            <button onClick={handleSearch}>Search</button>
+            <button onClick={handleSearch} className="serach_but">Search</button>
+            </div>
             <div className="search_grid">
                 {products.map((product) => (
                     <Element

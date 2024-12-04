@@ -2,9 +2,11 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_cors import CORS
+from sqlalchemy.sql import text  # Import text for raw SQL
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app)
+
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vika:vika@localhost/onlinestore'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -27,26 +29,19 @@ def home():
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
-    # products = Product.query.all()
-    # product_list = [{
-    #     'id': product.id,
-    #     'name': product.name,
-    #     'price': product.price,
-    #     'description': product.description
-    # } for product in products]
-    # return jsonify(product_list)
     try:
         products = Product.query.all()
-        result = [
-            {"id": product.id, "name": product.name}
-            for product in products
-        ]
-        return jsonify(result)
+        return jsonify([{
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+            'description': product.description
+        } for product in products])
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/products/<int:product_id>', methods=['GET'])
-def get_product(product_id):
+def get_product_by_id(product_id):
     product = Product.query.get(product_id)
     if not product:
         return jsonify({'error': 'Product not found'}), 404
@@ -91,6 +86,19 @@ def delete_product(product_id):
     db.session.delete(product)
     db.session.commit()
     return jsonify({'message': 'Product deleted successfully'})
+
+@app.route('/api/products/search', methods=['GET'])
+def search_products():
+    search_query = request.args.get('q', '')  # Get the 'q' parameter from the frontend
+    try:
+        # Vulnerable query (DO NOT use in production)
+        query = text(f"SELECT * FROM products WHERE name LIKE '%{search_query}%'")
+        result = db.session.execute(query).fetchall()
+        products = [{"id": row[0], "name": row[1], "price": row[2], "description": row[3]} for row in result]
+        return jsonify(products)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     # Ensure the database and tables are created
