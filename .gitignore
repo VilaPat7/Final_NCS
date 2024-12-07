@@ -1,0 +1,7 @@
+front/node_modules/.cache/
+back/venv/
+back/bin/
+back/lib/
+back/lib64
+back/pyvenv.cfg
+
