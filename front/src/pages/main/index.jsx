@@ -9,19 +9,22 @@ export const MainPage = () => {
     
     
     
-    const handleButtonClick = () => {
-        navigate('/new');
+    const handleButtonClickLogin = () => {
+        navigate('/login');
       };
-    const handleButtonClick1 = () => {
-        navigate('/new1');
+    const handleButtonClickCart = () => {
+        navigate('/cart');
       };
-    const handleButtonClick2 = () => {
-        navigate('/new2');
+    const handleButtonClickSearch = () => {
+        navigate('/search');
+      };
+    const handleButtonClickSupport = () => {
+        navigate('/support');
       };
     
     return(
         <div className="main">
-            <button className="login_button" onClick={handleButtonClick}>Log in</button>
+            <button className="login_button" onClick={handleButtonClickLogin}>Log in</button>
             <div className="main_page">
 
                 <div className="first_block">
@@ -30,8 +33,9 @@ export const MainPage = () => {
                         vulnerabilities in the context of an online houseplants  
                         store.</p>
                     <div className="button_place">
-                        <button className="first_button" onClick={handleButtonClick1}>Shopping cart</button>
-                        <button className="second_button" onClick={handleButtonClick2}>Product search</button>
+                        <button className="first_button" onClick={handleButtonClickCart}>Shopping cart</button>
+                        <button className="second_button" onClick={handleButtonClickSearch}>Product search</button>
+                        <button className="support_button" onClick={handleButtonClickSupport}>Support</button>
                     </div>
                 </div>
                 <div className="second_block">

@@ -1,3 +1,4 @@
+import ctypes
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -13,6 +14,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
+
+vulnerable_lib = ctypes.CDLL('./libvulnerable.so')
 
 # Define Product model
 class Product(db.Model):
@@ -100,6 +103,18 @@ def search_products():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/api/support', methods=['POST'])
+def vulnerable_c():
+    user_input = request.json.get('input', '')
+
+    try:
+        c_input = ctypes.create_string_buffer(user_input.encode('utf-8'))
+
+        vulnerable_lib.vulnerable_function(c_input)
+
+        return jsonify({'message': 'Function executed successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     # Ensure the database and tables are created
