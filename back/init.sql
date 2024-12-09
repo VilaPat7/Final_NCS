@@ -8,7 +8,7 @@ CREATE DATABASE onlinestore IF NOT EXISTS;
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL 
+    password VARCHAR(255) NOT NULL
 );
 
 -- Create the "Products" table
@@ -30,8 +30,8 @@ CREATE TABLE Cart (
 
 -- Insert sample users
 INSERT INTO Users (username, password)
-VALUES 
-    ('admin', 'adminpassword'), 
+VALUES
+    ('admin', 'adminpassword'),
     ('user1', 'password1'),
     ('user2', 'password2');
 

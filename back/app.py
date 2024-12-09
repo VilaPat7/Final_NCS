@@ -30,6 +30,24 @@ class Product(db.Model):
 def home():
     return 'Welcome to the Online Store API!'
 
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username', '')
+    password = data.get('password', '')
+
+    try:
+        # Уязвимый SQL-запрос
+        query = text(f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'")
+        result = db.session.execute(query).fetchone()
+
+        if result:
+            return jsonify({'success': True, 'message': 'Login successful!'})
+        else:
+            return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/products', methods=['GET'])
 def get_products():
     try:
