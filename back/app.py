@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/onlinestore'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vika:vika@localhost/onlinestore'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
@@ -37,7 +37,6 @@ def login():
     password = data.get('password', '')
 
     try:
-        # Уязвимый SQL-запрос
         query = text(f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'")
         result = db.session.execute(query).fetchone()
 
