@@ -109,9 +109,9 @@ def delete_product(product_id):
 
 @app.route('/api/products/search', methods=['GET'])
 def search_products():
-    search_query = request.args.get('q', '')  # Get the 'q' parameter from the frontend
+    search_query = request.args.get('q', '') 
     try:
-        # Vulnerable query (DO NOT use in production)
+      
         query = text(f"SELECT * FROM products WHERE name LIKE '%{search_query}%'")
         result = db.session.execute(query).fetchall()
         products = [{"id": row[0], "name": row[1], "price": row[2], "description": row[3]} for row in result]
@@ -134,7 +134,7 @@ def vulnerable_c():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Ensure the database and tables are created
+  
     with app.app_context():
         db.create_all()
 
