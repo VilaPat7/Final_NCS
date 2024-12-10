@@ -53,6 +53,7 @@ Ensure you have the following installed on your system:
 6. **Start the Frontend**  
    ```bash
    cd ../front
+   npm i
    npm start
    ```
 
