@@ -1,18 +1,18 @@
 -- Create the database
-CREATE DATABASE onlinestore IF NOT EXISTS;
+-- CREATE DATABASE onlinestore IF NOT EXISTS;
 
 -- Connect to the database
 \c onlinestore;
 
 -- Create the "Users" table
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
 
 -- Create the "Products" table
-CREATE TABLE Products (
+CREATE TABLE IF NOT EXISTS Products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -21,7 +21,7 @@ CREATE TABLE Products (
 );
 
 -- Create the "Cart" table
-CREATE TABLE Cart (
+CREATE TABLE IF NOT EXISTS Cart (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES Users(id) ON DELETE CASCADE,
     product_id INT NOT NULL REFERENCES Products(id) ON DELETE CASCADE,

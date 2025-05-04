@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: vika
+      POSTGRES_PASSWORD: vika
+      POSTGRES_DB: onlinestore
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./back/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vika -d onlinestore"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
+  backend:
+    build: ./back
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: app.py
+      SQLALCHEMY_DATABASE_URI: postgresql://vika:vika@db:5432/onlinestore
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  frontend:
+    build: ./front
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

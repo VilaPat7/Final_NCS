@@ -3,13 +3,13 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_cors import CORS
-from sqlalchemy.sql import text  # Import text for raw SQL
+from sqlalchemy.sql import text 
 
 app = Flask(__name__)
 CORS(app)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vika:vika@localhost/onlinestore'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vika:vika@db/onlinestore'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
@@ -109,9 +109,8 @@ def delete_product(product_id):
 
 @app.route('/api/products/search', methods=['GET'])
 def search_products():
-    search_query = request.args.get('q', '')  # Get the 'q' parameter from the frontend
+    search_query = request.args.get('q', '') 
     try:
-        # Vulnerable query (DO NOT use in production)
         query = text(f"SELECT * FROM products WHERE name LIKE '%{search_query}%'")
         result = db.session.execute(query).fetchall()
         products = [{"id": row[0], "name": row[1], "price": row[2], "description": row[3]} for row in result]
@@ -132,11 +131,22 @@ def vulnerable_c():
         return jsonify({'message': 'Function executed successfully'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
+def wait_for_db():
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    attempts = 0
+    while attempts < 5:
+        try:
+            with engine.connect() as conn:
+                return True
+        except OperationalError:
+            attempts += 1
+            time.sleep(2)
+    raise Exception("Failed to connect to database")
 if __name__ == '__main__':
     # Ensure the database and tables are created
     with app.app_context():
+        wait_for_db()
         db.create_all()
 
     # Run the app
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
